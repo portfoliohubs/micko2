@@ -1524,6 +1524,7 @@
         }
 
         async function generateCvPdf() {
+            console.log('cvData:', cvData);
             const hero = (cvData.hero || {});
             const skills = (cvData.skills || {});
             const education = (cvData.education || {});
