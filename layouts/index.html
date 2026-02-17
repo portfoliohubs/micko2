@@ -1448,7 +1448,7 @@
     </footer>
 
     <script>
-        const cvData = {
+        const rawCvData = {
             lang: {{ .Site.Language.Lang | default "en" | jsonify }},
             baseURL: {{ .Site.BaseURL | jsonify }},
             title: {{ .Site.Title | jsonify }},
@@ -1463,6 +1463,34 @@
             clinicalCases: {{ .Site.Params.clinical_cases | jsonify }},
             labels: {{ .Site.Params.ui.labels | jsonify }},
             labelsAr: {{ .Site.Params.ar.ui.labels | jsonify }}
+        };
+
+        function safeParse(val) {
+            if (typeof val === 'string') {
+                try {
+                    return JSON.parse(val);
+                } catch (_) {
+                    return val;
+                }
+            }
+            return val;
+        }
+
+        const cvData = {
+            lang: safeParse(rawCvData.lang),
+            baseURL: safeParse(rawCvData.baseURL),
+            title: safeParse(rawCvData.title),
+            hero: safeParse(rawCvData.hero),
+            heroAr: safeParse(rawCvData.heroAr),
+            skills: safeParse(rawCvData.skills),
+            skillsAr: safeParse(rawCvData.skillsAr),
+            education: safeParse(rawCvData.education),
+            educationAr: safeParse(rawCvData.educationAr),
+            contact: safeParse(rawCvData.contact),
+            contactArLocation: safeParse(rawCvData.contactArLocation),
+            clinicalCases: safeParse(rawCvData.clinicalCases),
+            labels: safeParse(rawCvData.labels),
+            labelsAr: safeParse(rawCvData.labelsAr)
         };
 
         const CV_LANG = 'en';
