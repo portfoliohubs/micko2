@@ -1458,6 +1458,19 @@
             initLanguage();
             initNavigation();
             initFooter();
+            // Download CV button
+            document.getElementById('downloadCvBtn').addEventListener('click', async function() {
+                const btn = this;
+                const oldHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                try {
+                    await generateCvPdf();
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = oldHtml;
+                }
+            });
         });
 
         // Theme Toggle
@@ -1765,18 +1778,6 @@
             pdfMake.createPdf(docDefinition).download(`${fileNameSafe || 'cv'}_${CV_LANG}.pdf`);
         }
 
-        document.getElementById('downloadCvBtn').addEventListener('click', async function() {
-            const btn = this;
-            const oldHtml = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            try {
-                await generateCvPdf();
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = oldHtml;
-            }
-        });
-    </script>
+        </script>
 </body>
 </html>
