@@ -1505,10 +1505,13 @@
 
         function buildCasesFlatList() {
             const flat = [];
-            (cvData.clinicalCases || []).forEach(cat => {
+            const casesRaw = cvData.clinicalCases;
+            const cases = Array.isArray(casesRaw) ? casesRaw : [];
+            cases.forEach(cat => {
                 if (cat && cat.enabled === false) return;
                 const categoryTitle = pickLangValue(cat.category || '', cat.category_ar || '');
-                (cat.cases || []).forEach(c => {
+                const catCases = Array.isArray(cat.cases) ? cat.cases : [];
+                catCases.forEach(c => {
                     flat.push({
                         categoryTitle,
                         photo: c.photo || '',
