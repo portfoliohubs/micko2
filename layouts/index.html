@@ -1448,128 +1448,6 @@
     </footer>
 
     <script>
-        // Language and Theme Management
-        let currentLang = 'en';
-        let currentTheme = localStorage.getItem('theme') || 'light';
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            initTheme();
-            initLanguage();
-            initNavigation();
-            initFooter();
-            // Download CV button
-            document.getElementById('downloadCvBtn').addEventListener('click', async function() {
-                const btn = this;
-                const oldHtml = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                try {
-                    await generateCvPdf();
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = oldHtml;
-                }
-            });
-        });
-
-        // Theme Toggle
-        function initTheme() {
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            const themeIcon = document.querySelector('#themeToggle i');
-            themeIcon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-
-        document.getElementById('themeToggle').addEventListener('click', function() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', currentTheme);
-            initTheme();
-        });
-
-        // Language Toggle
-        function initLanguage() {
-            document.body.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
-            document.documentElement.setAttribute('lang', currentLang);
-            updateI18nText();
-            updateI18nAlt();
-        }
-
-        document.getElementById('langToggle').addEventListener('click', function() {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            const langText = document.querySelector('.lang-text');
-            langText.textContent = currentLang === 'en' ? 'AR' : 'EN';
-            initLanguage();
-        });
-
-        function updateI18nText() {
-            document.querySelectorAll('[data-en][data-ar]').forEach(el => {
-                const enText = el.getAttribute('data-en');
-                const arText = el.getAttribute('data-ar');
-                if (enText && arText) {
-                    el.textContent = currentLang === 'en' ? enText : arText;
-                }
-            });
-        }
-
-        function updateI18nAlt() {
-            document.querySelectorAll('[data-alt-en][data-alt-ar]').forEach(el => {
-                const enAlt = el.getAttribute('data-alt-en');
-                const arAlt = el.getAttribute('data-alt-ar');
-                if (enAlt && arAlt) {
-                    el.setAttribute('alt', currentLang === 'en' ? enAlt : arAlt);
-                }
-            });
-        }
-
-        // Navigation
-        function initNavigation() {
-            const menuBtn = document.getElementById('menuBtn');
-            const closeBtn = document.getElementById('closeBtn');
-            const mobileNav = document.getElementById('mobileNav');
-            const navLinks = document.querySelectorAll('.nav-links a, .bottom-nav .nav-item');
-            
-            menuBtn.addEventListener('click', () => mobileNav.classList.add('active'));
-            closeBtn.addEventListener('click', () => mobileNav.classList.remove('active'));
-            
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    mobileNav.classList.remove('active');
-                    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
-                    if (this.classList.contains('nav-item')) this.classList.add('active');
-                });
-            });
-            
-            const sections = document.querySelectorAll('.section');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const id = entry.target.id;
-                        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-                            item.classList.remove('active');
-                            if (item.getAttribute('href') === `#${id}`) item.classList.add('active');
-                        });
-                    }
-                });
-            }, { threshold: 0.3 });
-            
-            sections.forEach(section => observer.observe(section));
-        }
-
-        // Footer
-        function initFooter() {
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-        }
-    </script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.min.js"></script>
-
-    <!-- Floating Button -->
-    <button type="button" class="floating-btn" id="downloadCvBtn" aria-label="Download CV PDF">
-        <i class="fas fa-file-arrow-down"></i>
-    </button>
-
-    <script>
         const cvData = {
             lang: {{ .Site.Language.Lang | default "en" | jsonify }},
             baseURL: {{ .Site.BaseURL | jsonify }},
@@ -1778,6 +1656,126 @@
             pdfMake.createPdf(docDefinition).download(`${fileNameSafe || 'cv'}_${CV_LANG}.pdf`);
         }
 
-        </script>
-</body>
+        // Language and Theme Management
+        let currentLang = 'en';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initLanguage();
+            initNavigation();
+            initFooter();
+            // Download CV button
+            document.getElementById('downloadCvBtn').addEventListener('click', async function() {
+                const btn = this;
+                const oldHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                try {
+                    await generateCvPdf();
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = oldHtml;
+                }
+            });
+        });
+
+        // Theme Toggle
+        function initTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            const themeIcon = document.querySelector('#themeToggle i');
+            themeIcon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            initTheme();
+        });
+
+        // Language Toggle
+        function initLanguage() {
+            document.body.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', currentLang);
+            updateI18nText();
+            updateI18nAlt();
+        }
+
+        document.getElementById('langToggle').addEventListener('click', function() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            const langText = document.querySelector('.lang-text');
+            langText.textContent = currentLang === 'en' ? 'AR' : 'EN';
+            initLanguage();
+        });
+
+        function updateI18nText() {
+            document.querySelectorAll('[data-en][data-ar]').forEach(el => {
+                const enText = el.getAttribute('data-en');
+                const arText = el.getAttribute('data-ar');
+                if (enText && arText) {
+                    el.textContent = currentLang === 'en' ? enText : arText;
+                }
+            });
+        }
+
+        function updateI18nAlt() {
+            document.querySelectorAll('[data-alt-en][data-alt-ar]').forEach(el => {
+                const enAlt = el.getAttribute('data-alt-en');
+                const arAlt = el.getAttribute('data-alt-ar');
+                if (enAlt && arAlt) {
+                    el.setAttribute('alt', currentLang === 'en' ? enAlt : arAlt);
+                }
+            });
+        }
+
+        // Navigation
+        function initNavigation() {
+            const menuBtn = document.getElementById('menuBtn');
+            const closeBtn = document.getElementById('closeBtn');
+            const mobileNav = document.getElementById('mobileNav');
+            const navLinks = document.querySelectorAll('.nav-links a, .bottom-nav .nav-item');
+            
+            menuBtn.addEventListener('click', () => mobileNav.classList.add('active'));
+            closeBtn.addEventListener('click', () => mobileNav.classList.remove('active'));
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileNav.classList.remove('active');
+                    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+                    if (this.classList.contains('nav-item')) this.classList.add('active');
+                });
+            });
+            
+            const sections = document.querySelectorAll('.section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                            item.classList.remove('active');
+                            if (item.getAttribute('href') === `#${id}`) item.classList.add('active');
+                        });
+                    }
+                });
+            }, { threshold: 0.3 });
+            
+            sections.forEach(section => observer.observe(section));
+        }
+
+        // Footer
+        function initFooter() {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.min.js"></script>
+
+    <!-- Floating Button -->
+    <button type="button" class="floating-btn" id="downloadCvBtn" aria-label="Download CV PDF">
+        <i class="fas fa-file-arrow-down"></i>
+    </button>
+
+    </body>
 </html>
