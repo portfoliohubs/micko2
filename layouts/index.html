@@ -1560,8 +1560,19 @@
 
             // Configure pdfMake with Unicode font support for Arabic
             if (typeof pdfMake !== 'undefined') {
-                // Use default pdfMake fonts which have better Unicode support
-                // Don't override fonts to avoid configuration issues
+                // Try using Arial which typically has better Arabic support
+                try {
+                    pdfMake.fonts = {
+                        Arial: {
+                            normal: 'Arial',
+                            bold: 'Arial-Bold',
+                            italics: 'Arial-Italic',
+                            bolditalics: 'Arial-BoldItalic'
+                        }
+                    };
+                } catch (e) {
+                    console.log('Font configuration failed, using defaults:', e);
+                }
             }
 
             const name = hero.name || cvData.title || 'CV';
@@ -1638,18 +1649,39 @@
                 contactLines.push({ text: `${labels.email || 'Email'}: ${cvData.contact.email}`, style: 'small', margin: [0, 2, 0, 0] });
             }
             if (cvData.contact?.location?.address) {
-                const locationText = cvData.contact.location.address;
+                let locationText = cvData.contact.location.address;
                 const locationLabel = labels.location || 'Location';
                 
-                // Simple Arabic text detection
+                // Enhanced Arabic text handling
                 const isArabic = /[\u0600-\u06FF]/.test(locationText);
                 
-                contactLines.push({ 
-                    text: `${locationLabel}: ${locationText}`, 
-                    style: 'small', 
-                    margin: [0, 2, 0, 0],
-                    alignment: isArabic ? 'right' : 'left'
-                });
+                if (isArabic) {
+                    // Try multiple approaches for Arabic text
+                    locationText = locationText
+                        .normalize('NFC')
+                        .replace(/[\u200B-\u200D\uFEFF]/g, '')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+                    
+                    // Create text object with enhanced properties for Arabic
+                    contactLines.push({ 
+                        text: [
+                            { text: locationLabel + ': ', font: 'Arial' },
+                            { text: locationText, font: 'Arial', characterSpacing: 0, alignment: 'right' }
+                        ],
+                        style: 'small', 
+                        margin: [0, 2, 0, 0],
+                        alignment: 'right'
+                    });
+                } else {
+                    // Normal handling for non-Arabic text
+                    contactLines.push({ 
+                        text: `${locationLabel}: ${locationText}`, 
+                        style: 'small', 
+                        margin: [0, 2, 0, 0],
+                        alignment: 'left'
+                    });
+                }
             }
 
             const clinicalSkills = (skills.clinical || []).map(s => ({ text: s }));
@@ -1666,7 +1698,7 @@
                 pageSize: 'A4',
                 pageMargins: [40, 48, 40, 48],
                 defaultStyle: {
-                    font: 'Roboto',
+                    font: 'Arial',
                     fontSize: 11
                 },
                 content: [
