@@ -1558,6 +1558,24 @@
             const education = (cvData.education || {});
             const labels = (cvData.labels || {});
 
+            // Configure pdfMake with Arabic font support
+            if (typeof pdfMake !== 'undefined') {
+                pdfMake.fonts = {
+                    Roboto: {
+                        normal: 'Roboto-Regular.ttf',
+                        bold: 'Roboto-Medium.ttf',
+                        italics: 'Roboto-Italic.ttf',
+                        bolditalics: 'Roboto-MediumItalic.ttf'
+                    },
+                    Cairo: {
+                        normal: 'https://cdn.jsdelivr.net/gh/googlefonts/arabic/Cairo/Cairo-Regular.ttf',
+                        bold: 'https://cdn.jsdelivr.net/gh/googlefonts/arabic/Cairo/Cairo-Bold.ttf',
+                        italics: 'https://cdn.jsdelivr.net/gh/googlefonts/arabic/Cairo/Cairo-Regular.ttf',
+                        bolditalics: 'https://cdn.jsdelivr.net/gh/googlefonts/arabic/Cairo/Cairo-Bold.ttf'
+                    }
+                };
+            }
+
             const name = hero.name || cvData.title || 'CV';
             const role = hero.tagline || '';
             const graduation = hero.graduation || '';
@@ -1625,7 +1643,16 @@
             if (cvData.contact?.phone) contactLines.push({ text: `${labels.phone || 'Phone'}: ${cvData.contact.phone}` });
             if (cvData.contact?.whatsapp) contactLines.push({ text: `${labels.whatsapp || 'WhatsApp'}: ${cvData.contact.whatsapp}` });
             if (cvData.contact?.email) contactLines.push({ text: `${labels.email || 'Email'}: ${cvData.contact.email}` });
-            if (cvData.contact?.location?.address) contactLines.push({ text: `${labels.location || 'Location'}: ${cvData.contact.location.address}` });
+            if (cvData.contact?.location?.address) {
+                // Handle Arabic text with proper font
+                const locationText = cvData.contact.location.address;
+                const locationLabel = labels.location || 'Location';
+                const isArabic = /[\u0600-\u06FF]/.test(locationText);
+                contactLines.push({ 
+                    text: `${locationLabel}: ${locationText}`,
+                    font: isArabic ? 'Cairo' : 'Roboto'
+                });
+            }
 
             const clinicalSkills = (skills.clinical || []).map(s => ({ text: s }));
             const digitalSkills = (skills.digital || []).map(s => ({ text: s }));
