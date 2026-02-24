@@ -1622,13 +1622,26 @@
             }
 
             const contactLines = [];
-            if (cvData.contact?.phone) contactLines.push({ text: `${labels.phone || 'Phone'}: ${cvData.contact.phone}` });
-            if (cvData.contact?.whatsapp) contactLines.push({ text: `${labels.whatsapp || 'WhatsApp'}: ${cvData.contact.whatsapp}` });
-            if (cvData.contact?.email) contactLines.push({ text: `${labels.email || 'Email'}: ${cvData.contact.email}` });
+            if (cvData.contact?.phone) {
+                contactLines.push({ text: `${labels.phone || 'Phone'}: ${cvData.contact.phone}`, style: 'small', margin: [0, 2, 0, 0] });
+            }
+            if (cvData.contact?.whatsapp) {
+                contactLines.push({ text: `${labels.whatsapp || 'WhatsApp'}: ${cvData.contact.whatsapp}`, style: 'small', margin: [0, 2, 0, 0] });
+            }
+            if (cvData.contact?.email) {
+                contactLines.push({ text: `${labels.email || 'Email'}: ${cvData.contact.email}`, style: 'small', margin: [0, 2, 0, 0] });
+            }
             if (cvData.contact?.location?.address) {
                 const locationText = cvData.contact.location.address;
                 const locationLabel = labels.location || 'Location';
-                contactLines.push({ text: `${locationLabel}: ${locationText}` });
+                // Handle Arabic text by ensuring proper Unicode handling
+                contactLines.push({ 
+                    text: `${locationLabel}: ${locationText}`, 
+                    style: 'small', 
+                    margin: [0, 2, 0, 0],
+                    // Try to handle Arabic text direction
+                    alignment: /[\u0600-\u06FF]/.test(locationText) ? 'right' : 'left'
+                });
             }
 
             const clinicalSkills = (skills.clinical || []).map(s => ({ text: s }));
@@ -1659,7 +1672,7 @@
                                     { text: name, style: 'name' },
                                     role ? { text: role, style: 'subtitle' } : null,
                                     graduation ? { text: graduation, style: 'smallMuted' } : null,
-                                    { text: contactLines, style: 'small', margin: [0, 20, 0, 0] }
+                                    ...contactLines
                                 ].filter(Boolean),
                                 margin: [20, 0, 0, 0]
                             }
