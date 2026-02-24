@@ -1558,24 +1558,6 @@
             const education = (cvData.education || {});
             const labels = (cvData.labels || {});
 
-            // Configure pdfMake with Arabic font support
-            if (typeof pdfMake !== 'undefined') {
-                pdfMake.fonts = {
-                    Roboto: {
-                        normal: 'Roboto-Regular.ttf',
-                        bold: 'Roboto-Medium.ttf',
-                        italics: 'Roboto-Italic.ttf',
-                        bolditalics: 'Roboto-MediumItalic.ttf'
-                    },
-                    Cairo: {
-                        normal: 'https://cdn.jsdelivr.net/gh/googlefonts/arabic/Cairo/Cairo-Regular.ttf',
-                        bold: 'https://cdn.jsdelivr.net/gh/googlefonts/arabic/Cairo/Cairo-Bold.ttf',
-                        italics: 'https://cdn.jsdelivr.net/gh/googlefonts/arabic/Cairo/Cairo-Regular.ttf',
-                        bolditalics: 'https://cdn.jsdelivr.net/gh/googlefonts/arabic/Cairo/Cairo-Bold.ttf'
-                    }
-                };
-            }
-
             const name = hero.name || cvData.title || 'CV';
             const role = hero.tagline || '';
             const graduation = hero.graduation || '';
@@ -1644,14 +1626,9 @@
             if (cvData.contact?.whatsapp) contactLines.push({ text: `${labels.whatsapp || 'WhatsApp'}: ${cvData.contact.whatsapp}` });
             if (cvData.contact?.email) contactLines.push({ text: `${labels.email || 'Email'}: ${cvData.contact.email}` });
             if (cvData.contact?.location?.address) {
-                // Handle Arabic text with proper font
                 const locationText = cvData.contact.location.address;
                 const locationLabel = labels.location || 'Location';
-                const isArabic = /[\u0600-\u06FF]/.test(locationText);
-                contactLines.push({ 
-                    text: `${locationLabel}: ${locationText}`,
-                    font: isArabic ? 'Cairo' : 'Roboto'
-                });
+                contactLines.push({ text: `${locationLabel}: ${locationText}` });
             }
 
             const clinicalSkills = (skills.clinical || []).map(s => ({ text: s }));
@@ -1741,7 +1718,17 @@
             };
 
             const fileNameSafe = (name || 'cv').toString().replace(/[^a-z0-9\-_ ]/gi, '').trim().replace(/\s+/g, '_');
-            pdfMake.createPdf(docDefinition).download(`${fileNameSafe || 'cv'}_${CV_LANG}.pdf`);
+            
+            try {
+                console.log('Creating PDF with docDefinition:', docDefinition);
+                const pdfDoc = pdfMake.createPdf(docDefinition);
+                console.log('PDF document created, downloading...');
+                pdfDoc.download(`${fileNameSafe || 'cv'}_${CV_LANG}.pdf`);
+                console.log('PDF download initiated');
+            } catch (error) {
+                console.error('Error creating PDF:', error);
+                throw error;
+            }
         }
 
         // Language and Theme Management
@@ -1761,7 +1748,12 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 try {
+                    console.log('Starting PDF generation...');
                     await generateCvPdf();
+                    console.log('PDF generated successfully');
+                } catch (error) {
+                    console.error('PDF generation failed:', error);
+                    alert('Failed to generate PDF. Please check console for details.');
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = oldHtml;
