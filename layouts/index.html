@@ -1560,15 +1560,8 @@
 
             // Configure pdfMake with Unicode font support for Arabic
             if (typeof pdfMake !== 'undefined') {
-                pdfMake.fonts = {
-                    // Use built-in Unicode fonts that support Arabic
-                    Helvetica: {
-                        normal: 'Helvetica',
-                        bold: 'Helvetica-Bold',
-                        italics: 'Helvetica-Oblique',
-                        bolditalics: 'Helvetica-BoldOblique'
-                    }
-                };
+                // Use default pdfMake fonts which have better Unicode support
+                // Don't override fonts to avoid configuration issues
             }
 
             const name = hero.name || cvData.title || 'CV';
@@ -1645,33 +1638,17 @@
                 contactLines.push({ text: `${labels.email || 'Email'}: ${cvData.contact.email}`, style: 'small', margin: [0, 2, 0, 0] });
             }
             if (cvData.contact?.location?.address) {
-                let locationText = cvData.contact.location.address;
+                const locationText = cvData.contact.location.address;
                 const locationLabel = labels.location || 'Location';
                 
-                // Enhanced Arabic text detection and handling
-                const isArabic = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(locationText);
-                
-                // Text preprocessing for better Arabic support
-                if (isArabic) {
-                    // Normalize Arabic text for better rendering
-                    locationText = locationText
-                        .replace(/\s+/g, ' ')  // Normalize spaces
-                        .trim();
-                }
+                // Simple Arabic text detection
+                const isArabic = /[\u0600-\u06FF]/.test(locationText);
                 
                 contactLines.push({ 
                     text: `${locationLabel}: ${locationText}`, 
                     style: 'small', 
                     margin: [0, 2, 0, 0],
-                    // Set alignment based on text direction
-                    alignment: isArabic ? 'right' : 'left',
-                    // Ensure proper text rendering
-                    characterSpacing: isArabic ? 0 : 0,
-                    // Handle line breaks for Arabic text
-                    preserveLeadingSpaces: true,
-                    // Additional properties for Arabic text
-                    noWrap: false,
-                    lineHeight: isArabic ? 1.2 : 1.0
+                    alignment: isArabic ? 'right' : 'left'
                 });
             }
 
@@ -1689,7 +1666,7 @@
                 pageSize: 'A4',
                 pageMargins: [40, 48, 40, 48],
                 defaultStyle: {
-                    font: 'Helvetica',
+                    font: 'Roboto',
                     fontSize: 11
                 },
                 content: [
