@@ -1637,21 +1637,7 @@
             if (cvData.contact?.email) {
                 contactLines.push({ text: `${labels.email || 'Email'}: ${cvData.contact.email}`, style: 'small', margin: [0, 2, 0, 0] });
             }
-            if (cvData.contact?.location?.address) {
-                const locationText = cvData.contact.location.address;
-                const locationLabel = labels.location || 'Location';
-                
-                // Simple Arabic text detection
-                const isArabic = /[\u0600-\u06FF]/.test(locationText);
-                
-                contactLines.push({ 
-                    text: `${locationLabel}: ${locationText}`, 
-                    style: 'small', 
-                    margin: [0, 2, 0, 0],
-                    alignment: isArabic ? 'right' : 'left'
-                });
-            }
-
+            
             const clinicalSkills = (skills.clinical || []).map(s => ({ text: s }));
             const digitalSkills = (skills.digital || []).map(s => ({ text: s }));
             const softSkills = (skills.soft || []).map(s => ({ text: s }));
