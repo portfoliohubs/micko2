@@ -356,12 +356,7 @@ defaultContentLanguage = "en"
     category = "Endodontic Treatment"
     category_ar = "حشو العصب"
     
-    [[params.clinical_cases.cases]]
-      photo = "https://github.com/user-attachments/assets/0ecb33cb-22b5-424c-8b04-60f6178d71d9"
-      alt = "Endo lower Premolar"
-      description = "Endo lower Premolar"
-      alt_ar = "حشو عصب لضرس بالفك السفلى"
-      description_ar = "حشو عصب لضرس بالفك السفلى"
+
       
   # Contact Section
   [params.contact]
